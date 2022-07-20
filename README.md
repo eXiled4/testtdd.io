@@ -297,6 +297,11 @@ it("desciption here", () => {
 When creating components in our Angular 6 apps, some of them will be intended to be used as child components that go into parent or host components.
 As such, these components are going to have inputs that are passed in from their hosts and used internally in some way.
 
+Given a child component with selector "my-component", how can we bind to an input 'name' setting it to a host variable 'name'?
+
+<my-component [name]='name'>
+
+
 
 ## Testing Components with Output
 
@@ -316,6 +321,10 @@ startup() {
 }
 
 <!-- CREATE HTML ELEMENTS WITH THESE EVENT BINDINGES HERES -->
+
+
+Given a child component with selector "my-component", how can a host component bind to an output event "clicked", calling its on method "onClicked"?
+<my-component (clicked)="onClicked()" >
 
 
 ## Testing Services That Use HttpClient
@@ -342,6 +351,54 @@ In ng, best way to make a HTTP call from a service is through the HttpClientServ
 
         //
 
+        EXAMPLE COMP SPEC TS
+
+        import {  HttpErrorResponse  } from '@angular/common/http'
+
+        describe('describe blah here', () => {
+            let HttpClientSpy: { get: jasmine.spy }
+            let foodserv: MyFoodService
+                //the created spy variable inherits jasmine's way to intercept HTTP client's get call
+                //the foodserv represents the service itself and test
+
+            beforeEach(()=> {
+                httpClientSpy = jasmine.createSpyObj('HttpClient', ['get'])
+                foodserv =  new MyFoodService(<any>httpClientSpy)
+            })
+
+            //in beforeEach() - we initialize httpClientSpy via THE jasmine.createSpyObj method
+                    //first arg is name of the spy 'HttpClient' and second arg is the array of methods to look out for  
+
+            <!--  To initialize an instance of our foodService, we're going to use the constructor, 
+            MyFoodService. And you can see, we're going to pass to it our client spy service object. -->
+
+        })
+
+        CREATING INSIDE ASSERTION TEST FUNCTION TO HANDLE ERROR RESPONSE
+
+        it('should return error if server unavailable', () => {
+            const errResponse = new HttpErrorResponse({
+                error: 'name of error here',
+                status: 404,
+                statusText: 'shown error text on webpage here'
+            })
+        })
+
 
 ## Testing with Automatic Change Detection
+
+//When setting up Angular 6 testing on components, it's common practice to use detect changes 
+//in order to trigger data binding manually as we make our way through our tests and our assertions.
+
+<!-- That said, though, we do have the option of running tests, and having change detection run automatically 
+as it would for a normally running Angular app. To see what that looks like in the demo, 
+we have a basic component here on screen that we're calling UserProfileComponent. -->
+
+import {  ComponentFixtureAutoDetect  } from '@angular/core/testing'
+
+added in providers array inside the beforeEach(()) function in setting up the testing environment
+
+fixture.changeDetected(); not required as this makes up for it
+
+
 
