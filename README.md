@@ -138,3 +138,31 @@ beforeEach(() => {
 
 ## TESTING A DIRECTIVE
 
+Similiar to testinf componenents, we declare variables to inherit the DOM elements from component by fixt below
+<!-- HOWEVER NOW WE ARE USING THE DEBUGELEMENT TOO HERE -->
+<!-- debugElements, which is going to be an array of type DebugElement. -->
+<!-- debugElement is angular abstraction around the actual HTML Element -->
+<!-- AND PROVIDES EXTRA FUNCTIONALITY for testing and working with it -->
+
+describe('testing directive rabble rabble', () => {
+    let fixt: ComponentFixture<UserProfComponent>
+    let debugElements: DebugElement[]
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [UserProfComponent, UserDirective]
+        })
+    })
+})
+<!-- AS ABOVE, THE DIRECTIVE TO BE TESTED ON IS ADDED TO DECLARATIONS -->
+
+inside assertive test - example of how to test css styles
+
+it('should have a border and background color', () => {
+    let box = fixture.debugElement.query(By.css('#box4'))
+    let borderColor =  box.nativeElement.style.borderColor;
+    let backgroundColor = box.nativeElement.style.backgroundColor
+
+    expect(borderColor).toBe('brown')
+    expect(backgroundColor).toBe(DEFAULT_BG_COLOR)
+})
