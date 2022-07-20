@@ -166,3 +166,182 @@ it('should have a border and background color', () => {
     expect(borderColor).toBe('brown')
     expect(backgroundColor).toBe(DEFAULT_BG_COLOR)
 })
+
+## TESTING PIPES
+
+Testing pipes is straightforward using transform method
+
+Example code below -
+
+Pipe TS:
+
+export class BlahPipe implements transform PipeTransform {
+
+    transform(value: string):string {
+        if(value.length == 0){
+            return ""
+        }
+
+            let chars = value.split("")
+            let newValue = ""
+            chars.forEach((c, i) => {
+                let char = (i%2 == 0) ? c.toLowerCase() : c.toUpperCase()
+                newValue = newValue + char
+            })
+
+        return newValue
+    }
+
+}
+
+Pipe TS Spec:
+
+describe('AlternatingCasePipe', () => {
+    it('create an instance', () => {
+        const pipe = new AlternatingCasePipe();
+        expect(pipe).toBeTruthy();
+    });
+
+    it('alternate lower and upper cases', () => {
+        const pipe = new AlternatingCasePipe();
+        expect(pipe.transform('Andy')).toBe('aNdY')
+    })
+})
+
+<!-- in assertion test, we can see here that we are creating an instance of the pipe through the AlternatingCasePipe() -->
+<!-- Then we make use of the transform method that asserts the function and as usual, state expected outcomes by chaining the toBe() -->
+
+## CREATING TESTS USING MOCKS
+
+Common to have components/services to depend on other services
+
+Several ways to test elements with dependencies
+
+One of them is by mocking dependencies so we don't have to rely on actual implementations to test the component they are inject to
+
+EXAMPLE COMPONENT TS FILE:
+
+export class ... implements OnInit {
+
+    user: any
+    friendsOnLine:Observable<string[]>
+
+    constructor(private userServ: Userservice) { }
+
+    ngOnInit() {
+        this.user = this.userServ.getUserData()
+    }
+}
+
+EXAMPLE COMPONENT TS SPEC FILE:
+
+describe('insert description here' () => {
+    let comp: UserProfComponent
+    let fixt: ComponentFixture<UserProfComponent>
+
+    beforeEach(async(() => {
+        TestBed.configureTestModule({
+            declarations: [ UserProfComponent ],
+            providers: [{
+                provide: UserService, useClass: MockService
+                <!-- NOTE ABOVE THAT WHAT THE PROVIDERS DECLARTION MEANS IS THAT WE ARE declaring and using -->
+                <!-- the component inside useClass instead of the actual service -->
+            }]
+        })
+    }))
+
+})
+
+<!-- As you can see, UserProfileWithDependencyComponent has a service UserService -->
+
+## Creating Tests Using Spies
+
+When setting up component testing, where our components also have dependencies on async services, we can use JASMINE SPIES to intercept these calls
+And return values right away that we can work with
+
+inside the beforeEach() - we can first create dummy data to be tested lke this:
+
+let spy_getOnlineFriends
+let spy_getUserDetails
+
+beforeEACH(() => {
+
+
+
+let dummyDetails = {
+    first:"Eric",
+    last:"Cartman",
+    friends:[
+        "Kenny", "Stan", "Kyle"
+    ]
+}
+
+const usService = jasmine.createSpyObj('UserService', ['getOnlineFriends], 'getUserDetails')
+
+spy_getOnlineFriends = usService.getOnlineFriends.and.returnValue(of(dummyDetails.friends))
+spy_getUserDetails
+
+})
+
+<!-- IN ASSERTION TESTS, WE CAN SPECIFY THE SPECIFIC ELEMENT THAT WE WANT TO TEST FOR -->
+
+fixture.detectChanges();
+it("desciption here", () => {
+    fixture.detectChanges();
+    expect(debugElements[0].nativeElement.innerText).toContain('Kenny')
+    expect(debugElements[1].nativeElement.innerText).toContain('Stan')
+})
+
+## Testing Components with Input
+
+When creating components in our Angular 6 apps, some of them will be intended to be used as child components that go into parent or host components.
+As such, these components are going to have inputs that are passed in from their hosts and used internally in some way.
+
+
+## Testing Components with Output
+
+When creating components in our Angular 6 apps, some of them will be intended to be used as child components and parent, or host, components.
+As such, these child components are going to have outputs that the host components can subscribe to in order to receive events from that child.
+
+we can see that it's these two methods startUp and shutDown that actually emit events by using the appropriate event emitters.
+
+@Output('started')started = new EventEmitter<any>()
+@Output('stopped')stopped = new EventEmitter<any>()
+
+isStarted:boolean = false
+
+startup() {
+    this.isStarted = true
+    this.started.emit({make:this.make, model:this.model})
+}
+
+<!-- CREATE HTML ELEMENTS WITH THESE EVENT BINDINGES HERES -->
+
+
+## Testing Services That Use HttpClient
+
+It's a common scenario to have a custom data service created as part of our Angular app 
+that makes a network call to get or set some data.
+
+In ng, best way to make a HTTP call from a service is through the HttpClientService
+
+        //First we inject the HttpClient dependency
+
+        EXAMPLE COMP TS
+
+        import { HttpClient } from '@angular/common/http'
+
+
+        constructor(private http:HttpClient) {  }
+
+        //Then create a function with http get method that takes any data type
+
+        getFoods():Observable<any> {
+            return this.http.get(this.endpoint)
+        }
+
+        //
+
+
+## Testing with Automatic Change Detection
+
