@@ -39,3 +39,102 @@ Set jasmine as your test script in your package.json
 
 Run your tests
 npm test -->
+
+ng test will run all tests and spec files, provide with set of results showing what is passing and failing
+<!-- Angular CLI app comes with special Testbed module - to test the app, in the same way in production -->
+
+Apps are made up of different parts and can be brought together by DEPENDENCY INJECTION during testing as 
+<!-- In Testing environment we dont always want to run all components -->
+
+Ergo, we are able to test specific parts we intend on testing on
+
+<!-- In example video - the injection goes where the explicit test is written -->
+
+beforeEach(() => {
+    TestNed.configureTestingModule({
+        providers: [MyDemoService] 
+        <!-- First, provider is declared as the part to be tested-->
+    })
+})
+
+it('should create', inject([MyDemoService], (service: MyDemoService) => {
+    expect(service).tobeTruthy();
+    <!-- Then in the actual test, it is injected -->
+    <!-- first parameter in the inject line [] - is what we want to inject, the second parameter is the assertion function -->
+}))
+
+## Another wasy to inject service into assertion test is by calling the TestBed.get() through a variable inside an async test:
+
+it('#getFullName_p will return Randy Marsh (async)', async( () => {
+    let asyncserv = TestBed.get(UserService)
+    asyncserv.getUserName_p().subscribe ( nameValue() => {
+        expect(nameValue).toBe('Randy Marsh')
+    })
+}))
+
+
+## TESTING SERVICE CLASS
+
+SERVICE FILE SYNTAXES
+<!-- File name is UserService -->
+
+user = {
+    fname:"Randy"
+    lname:"Marsh"
+}
+
+constructor() { }
+
+getFullName():string {
+    return `${this.fname} ${this.lname}`
+}
+
+SERVICE SPEC FILE
+
+beforeEach(() => {
+    serv = new UserService();
+})
+
+it('will show stan's dad full name', () => {
+    expect(service.getFullName()).toBe('Randy Marsh')
+})
+
+it('#getFullName_p will return Randy Marsh', (done:DoneFn) => {
+    service.getFullName_p().then(nameValue => {
+        expect(nameValue).toBe('Randy Marsh')
+        done();
+        <!-- DONE IS A METHOD WE MANUALLY CALL FROM DONEFN, AFTER ANY ASYNC CALLS THAT HAVE COMPLETED... -->
+        <!-- ...We call Done to indicate that the test is complete. -->
+    })
+})
+
+## TESTING A COMPONENT
+
+testing code:
+
+describe('UserProfComponent', () => {
+    let comp: UserProfComponent;
+    let fixt: ComponentFixture<UserProfComponent>
+    <!-- This line allows debugging and testing a component, -with the presence of the <UserProfComponent> .. -->
+    <!-- ..Allows us to test the DOM elements of the component -->
+
+    beforeEach (async(() => {
+        TestBed.configureTestingModule({
+            declarations: [UserProfComponent]
+        }).compileComponents();
+    }))
+})
+
+
+<!-- compileComponents() is an async operation, only when it is complete, we will have access to all external files or stylesheets relating to the delcared components-->
+
+beforeEach(() => {
+    fixture = TestBed.createComponent(UserProfComponent);
+    comp = fixture.componentInstance
+    fixture.detectChanges();
+})
+
+<!-- This sync testing fx above creates a new instance for testing purposes and then binds the value to be tested via fixture.detectChanges() -->
+
+## TESTING A DIRECTIVE
+
